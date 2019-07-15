@@ -1,0 +1,29 @@
+<% include ../partials/header %>
+
+
+<h1>Your Lowest Reading in the past 24 hours</h1>
+<p id="low-sugar"><%= lowsugar %></p>
+
+<h1>Your Highest Reading in the past 24 hours</h1>
+<p id="low-sugar"><%= highsugar %></p>
+
+<h1>Your Average Reading in the past 24 hours</h1>
+<p id="low-sugar"><%= sugarsum %></p>
+
+
+
+<ul>
+  <% for(let i = 0; i < values.egvs.length; i++) { %>
+    <li><span class="values"><%= values.egvs[i].value %></span> || <%= values.egvs[i].displayTime %></li>
+  <% } %>
+
+</ul>
+
+<script>
+  let values = document.querySelectorAll('.values')
+
+  for(let i = 0; i < values.length; i++) {
+    console.log(values[i].innerText)
+  }
+</script>
+<% include ../partials/footer %>
