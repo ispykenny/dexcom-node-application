@@ -13,6 +13,10 @@ let currentTime;
 let getCurrentEl;
 let clientid = process.env.CLIENT_ID;
 let clientsecret = process.env.CLIENT_SECRET;
+let hypoRisk = "";
+let lowsugar;
+let highsugar;
+let median;
 
 app.set("view engine", "ejs");
 
@@ -72,13 +76,74 @@ app.get("/access_token", (req, res, next) => {
     "access-token: ",
     req.query.accesstoken + "refresh-token: " + req.query.refreshtoken
   );
-  let previousDate = moment().subtract(1, 'days').format("Y-MM-DDT");
+  let previousDate = moment()
+    .subtract(30, "days")
+    .format("Y-MM-DDT");
   currentDate = moment().format("Y-MM-DDT");
-  currentTime = moment().add(2, 'hours').format("kk:mm:ss");
-  let stringUrl = "/v2/users/self/egvs?startDate="+previousDate+ currentTime+"&endDate=";
-  
+  currentTime = moment()
+    .add(4, "hours")
+    .format("kk:mm:ss");
+  let stringUrl =
+    "/v2/users/self/egvs?startDate=" + previousDate + currentTime + "&endDate=";
 
   getCurrentEl = `${stringUrl}${currentDate}${currentTime}`;
+
+  let optionss = {
+    method: "POST",
+    hostname: "api.dexcom.com",
+    port: null,
+    path: "/v2/users/self/statistics?startDate=2019-07-01&endDate=2019-07-15",
+    headers: {
+      authorization: `Bearer ${accesstoken}`,
+      "content-type": "application/json"
+    }
+  };
+
+  var areq = http.request(optionss, function(raseq) {
+    var chunkes = [];
+
+    raseq.on("data", function(chunk) {
+      chunkes.push(chunk);
+    });
+
+    raseq.on("end", function() {
+      // averages
+      var bodye = Buffer.concat(chunkes);
+      hypoRisk = JSON.parse(bodye.toString()).hypoglycemiaRisk;
+      lowsugar = JSON.parse(bodye.toString()).min;
+      highsugar = JSON.parse(bodye.toString()).max;
+      median = JSON.parse(bodye.toString()).median;
+      console.log(JSON.parse(bodye.toString()));
+    });
+  });
+
+  areq.write(
+    JSON.stringify({
+      targetRanges: [
+        {
+          name: "day",
+          startTime: "06:00:00",
+          endTime: "22:00:00",
+          egvRanges: [
+            { name: "urgentLow", bound: 55 },
+            { name: "low", bound: 70 },
+            { name: "high", bound: 180 }
+          ]
+        },
+        {
+          name: "night",
+          startTime: "22:00:00",
+          endTime: "06:00:00",
+          egvRanges: [
+            { name: "urgentLow", bound: 55 },
+            { name: "low", bound: 80 },
+            { name: "high", bound: 200 }
+          ]
+        }
+      ]
+    })
+  );
+  areq.end();
 
   let options = {
     method: "GET",
@@ -101,23 +166,26 @@ app.get("/access_token", (req, res, next) => {
       let body = Buffer.concat(chunks);
       console.log(ress.statusCode);
       console.log(currentTime);
+      console.log("YAY", hypoRisk);
       if (ress.statusCode === 200) {
         let readingValueds = [];
-        
+
         let readings = JSON.parse(body.toString()).egvs;
-        for(let i = 0; i < readings.length; i++) {
-          readingValueds.push(readings[i].value)
-        }    
+        for (let i = 0; i < readings.length; i++) {
+          readingValueds.push(readings[i].value);
+        }
 
         // get average reading
-        let average = readingValueds.reduce((a, b) => a + b, 0) / readingValueds.length
+        let average =
+          readingValueds.reduce((a, b) => a + b, 0) / readingValueds.length;
 
         // render to page
         res.render("pages/page", {
           values: JSON.parse(body.toString()),
-          lowsugar: Math.min(...readingValueds),
-          highsugar: Math.max(...readingValueds),
-          sugarsum: Math.round(average)
+          lowsugar: lowsugar,
+          highsugar: highsugar,
+          sugarsum: median,
+          hyporisk: hypoRisk
         });
       } else {
         res.redirect(`/refresh?refreshtoken=${refreshtoken}`);
