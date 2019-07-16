@@ -1,19 +1,11 @@
+require("dotenv/config");
+require("../helpers/variables");
 const express = require("express");
 const router = express.Router();
-require("dotenv/config");
-let axios = require("axios");
-let qs = require("querystring");
 let http = require("https");
 let moment = require("moment");
-let currentDate;
-let currentTime;
-let getCurrentEl;
-let clientid = process.env.CLIENT_ID;
-let clientsecret = process.env.CLIENT_SECRET;
-let hypoRisk = "";
-let lowsugar;
-let highsugar;
-let median;
+
+
 
 
 router.get("/", (req, res, next) => {
