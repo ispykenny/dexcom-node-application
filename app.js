@@ -39,14 +39,14 @@ app.get("/code", (req, res, next) => {
     }
   };
 
-  let requ = http.request(options, function(ress) {
+  let requ = http.request(options, ress => {
     let chunks = [];
 
     ress.on("data", function(chunk) {
       chunks.push(chunk);
     });
 
-    ress.on("end", function() {
+    ress.on("end", () => {
       let body = Buffer.concat(chunks);
       console.log("here", JSON.parse(body.toString()));
       let accessToken = JSON.parse(body.toString()).access_token;
@@ -99,16 +99,16 @@ app.get("/access_token", (req, res, next) => {
     }
   };
 
-  var areq = http.request(optionss, function(raseq) {
-    var chunkes = [];
+  let areq = http.request(optionss, raseq => {
+    let chunkes = [];
 
-    raseq.on("data", function(chunk) {
+    raseq.on("data", chunk => {
       chunkes.push(chunk);
     });
 
-    raseq.on("end", function() {
+    raseq.on("end", () => {
       // averages
-      var bodye = Buffer.concat(chunkes);
+      let bodye = Buffer.concat(chunkes);
       hypoRisk = JSON.parse(bodye.toString()).hypoglycemiaRisk;
       lowsugar = JSON.parse(bodye.toString()).min;
       highsugar = JSON.parse(bodye.toString()).max;
