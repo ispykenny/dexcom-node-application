@@ -1,30 +1,102 @@
 <% include ../partials/header %>
 
-<h1>Your hypoglycemia risk is <%= hyporisk %></h1>
+<a href="/">Logout</a>
 
-<h1>Your Lowest Reading in the past 24 hours</h1>
-<p id="low-sugar"><%= lowsugar %></p>
+<div class="container initial">
+  <div class="selection">
+    <select name="" id="">
+      <option value="">24 Hours</option>
+      <option value="">3 Days</option>
+      <option value="">7 Days</option>
+      <option value="">1 Week</option>
+      <option value="">2 Weeks</option>
+      <option value="">3 Weeks</option>
+      <option value="">1 Month</option>
+    </select>
+  </div>
+  <h1>
+    Your hypoglycemia risk is <span style="text-decoration: underline;"><%= hyporisk %> low</span>
+  </h1>
+</div>
 
-<h1>Your Highest Reading in the past 24 hours</h1>
-<p id="low-sugar"><%= highsugar %></p>
+<div class="cards-parent-outer-most">
+  <div class="cards-parent">
+    <div class="cards">
+      <p class="reading"><%= lowsugar %></p>
+      <h4>Low</h4>
+    </div>
 
-<h1>Your Average Reading in the past 24 hours</h1>
-<p id="low-sugar"><%= sugarsum %></p>
+    <div class="cards">
+      <p class="reading"><%= highsugar %></p>
+      <h4>High</h4>
+    </div>
 
+    <div class="cards">
+      <p class="reading"><%= sugarsum %></p>
+      <h4>Average</h4>
+    </div>
+  </div>
 
+</div>
 
+<div class="container">
+    <canvas id="myChart"></canvas>
+</div>
 <ul>
   <% for(let i = 0; i < values.egvs.length; i++) { %>
-    <li><span class="values"><%= values.egvs[i].value %></span> || <span class="display-time"><%= values.egvs[i].displayTime %></span></li>
+  <li>
+    <span class="values"><%= values.egvs[i].value %></span> ||
+    <span class="display-time"><%= values.egvs[i].displayTime %></span>
+  </li>
   <% } %>
-
 </ul>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 <script>
-  let displayTime = document.querySelectorAll('.display-time')
-  console.log(moment)
-  for(let i = 0; i < displayTime.length; i++) {
-    displayTime[i].innerHTML = moment(displayTime[i].innerText).format('h:mmA on MM-DD-YYYY')
+  let displayTime = document.querySelectorAll(".display-time");
+  let disp = [];
+  for (let i = 0; i < displayTime.length; i++) {
+    displayTime[i].innerHTML = moment(displayTime[i].innerText).format(
+      "h:mmA on MM-DD-YYYY"
+    );
+    disp.push(displayTime[i].innerHTML.split(" on")[0] )
+
   }
+
+  console.log('end')
+  var ctx = document.getElementById('myChart').getContext('2d');
+  let values = document.querySelectorAll('.values')
+  let allValues = [];
+  for(let d = 0; d < values.length; d++) {
+    allValues.push(Number(values[d].innerText));
+  }
+  console.log(disp)
+
+  console.log(allValues)
+
+  var myChart = new Chart(ctx, {
+    type: 'line',
+    responsive: false,
+    data: {
+      labels: disp,
+        datasets: [{
+            label: 'mg/dL',
+            data: allValues,
+            backgroundColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 0.4
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        },
+        pointHoverRadius: 14
+    }
+});
 </script>
 <% include ../partials/footer %>

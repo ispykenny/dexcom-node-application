@@ -1,14 +1,19 @@
 require("dotenv/config");
-require("../helpers/variables");
 const express = require("express");
 const router = express.Router();
 let http = require("https");
 let moment = require("moment");
 
-
-
+let hypoRisk = "";
+let lowsugar = "";
+let highsugar = "";
+let median = "";
+let currentDate;
+let currentTime = "";
+let getCurrentEl = "";
 
 router.get("/", (req, res, next) => {
+  
   let accesstoken = req.query.accesstoken;
   let refreshtoken = req.query.refreshtoken;
   console.log(
@@ -16,13 +21,14 @@ router.get("/", (req, res, next) => {
     req.query.accesstoken + "refresh-token: " + req.query.refreshtoken
   );
   let ogdates = moment().format("Y-MM-DD");
-  let olderDates = moment().subtract(30, 'days').format("Y-MM-DD")
+  let olderDates = moment().subtract(1, 'days').format("Y-MM-DD")
   console.log(`/v2/users/self/statistics?startDate=${olderDates}&endDate=${ogdates}`)
   let previousDate = moment()
-    .subtract(30, "days")
+    .subtract(24, "hours")
     .format("Y-MM-DDT");
   currentDate = moment().format("Y-MM-DDT");
-  currentTime = moment().add(3, "hours").format("kk:mm:ss");
+  currentTime = moment().format("kk:mm:ss");
+  console.log(currentTime)
   let stringUrl =
     "/v2/users/self/egvs?startDate=" + previousDate + currentTime + "&endDate=";
 
@@ -38,8 +44,9 @@ router.get("/", (req, res, next) => {
       "content-type": "application/json"
     }
   };
-
+  
   let areq = http.request(optionss, raseq => {
+    
     let chunkes = [];
 
     raseq.on("data", chunk => {
@@ -47,6 +54,9 @@ router.get("/", (req, res, next) => {
     });
 
     raseq.on("end", () => {
+      
+      
+     
       // averages
       let bodye = Buffer.concat(chunkes);
       hypoRisk = JSON.parse(bodye.toString()).hypoglycemiaRisk;
