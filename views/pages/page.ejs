@@ -4,21 +4,29 @@
 
 <div class="container initial">
   <div class="selection">
-    <ul>
-      <li><a class="timeline-link" href="1">Days</a></li>
-      <li><a class="timeline-link" href="2">Days</a></li>
-      <li><a class="timeline-link" href="3">Days</a></li>
+    <ul class="date-selectors">
+      <li><a class="timeline-link" href="1">One Day</a></li>
+      <li><a class="timeline-link" href="2">Two Days</a></li>
+      <li><a class="timeline-link" href="3">Three Days</a></li>
       <li><a class="timeline-link" href="7">One Week</a></li>
       <li><a class="timeline-link" href="14">Two Weeks</a></li>
       <li><a class="timeline-link" href="21">Three Weeks</a></li>
-      <li><a class="timeline-link" href="30">1 Month</a></li>
-      <li><a class="timeline-link" href="60">2 Months</a></li>
+      <li><a class="timeline-link" href="30">One Month</a></li>
+      <li><a class="timeline-link" href="60">Two Months</a></li>
     </ul>
   </div>
-  <h1>You are viewing the past <span id="day-view"></span></h1>
+
+  <h1><%= daysViewingEl %></h1>
   <h1>
-    Your hypoglycemia risk is <span style="text-decoration: underline;"><%= hyporisk %> low</span>
+    Your hypoglycemia risk is <span style="text-decoration: underline;"><%= hyporisk %></span>
   </h1>
+
+  <ul>
+    <li>Time spent below range: <%= belowRange %> </li>
+    <li>Time spent in range: <%= inRange %></li>
+    <li>Time spent above range: <%= aboveRange %></li>
+    <li>Your estimated A1c is <%= estA1c %> </li>
+  </ul>
 </div>
 
 <div class="cards-parent-outer-most">
@@ -43,15 +51,16 @@
 
 <div class="container">
     <canvas id="myChart"></canvas>
+    <ul>
+      <% for(let i = 0; i < values.egvs.length; i++) { %>
+      <li>
+        <span class="values"><%= values.egvs[i].value %></span> ||
+        <span class="display-time"><%= values.egvs[i].displayTime %></span>
+      </li>
+      <% } %>
+    </ul>
 </div>
-<ul>
-  <% for(let i = 0; i < values.egvs.length; i++) { %>
-  <li>
-    <span class="values"><%= values.egvs[i].value %></span> ||
-    <span class="display-time"><%= values.egvs[i].displayTime %></span>
-  </li>
-  <% } %>
-</ul>
+
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
@@ -105,6 +114,12 @@
 let dateSelection = document.querySelectorAll('.timeline-link')
 let base = window.location.href;
 let cleanUrl = base.split("&startDate")[0]
+if(base.split("startDate=")[1]) {
+  console.log(true)
+} else {
+  window.location.replace(cleanUrl+"&startDate=1")
+  console.log(false)
+}
 console.log(cleanUrl)
 
 

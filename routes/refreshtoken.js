@@ -29,12 +29,11 @@ router.get("/", (req, res, next) => {
     });
 
     ress.on("end", () => {
-      console.log("it worked!!");
       let body = Buffer.concat(chunks);
       let accessToken = JSON.parse(body.toString()).access_token;
       let refreshToken = JSON.parse(body.toString()).refresh_token;
       res.redirect(
-        `/access_token?accesstoken=${accessToken}&refreshtoken=${refreshToken}`
+        `/is_loggedin?authUser=${accessToken}&refreshtoken=${refreshToken}`
       );
     });
   });

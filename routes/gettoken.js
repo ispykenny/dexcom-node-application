@@ -7,21 +7,31 @@ let moment = require("moment");
 let hypoRisk = "";
 let lowsugar = "";
 let highsugar = "";
-let median = "";
+let mediane = "";
 let currentDate;
 let currentTime = "";
 let getCurrentEl = "";
-
+let daysViewing = "";
+let belowRange = "";
+let inRange = "";
+let aboveRange = "";
+let estA1c = "";
 router.get("/", (req, res, next) => {
-  let accesstoken = req.query.accesstoken;
+  let accesstoken = req.query.authUser;
   let refreshtoken = req.query.refreshtoken;
   let dateRequested = req.query.startDate;
-  console.log(req.query.startDate)
   let dates;
+
   if(dateRequested) {
     dates = dateRequested
   } else {
     dates = 1;
+  }
+
+  if(dateRequested <= 1) {
+    daysViewing = "You are viewing the past day"
+  } else if(dateRequested >= 1) {
+    daysViewing = `You are viewing the past ${dateRequested} days`
   }
   
   // console.log(
@@ -59,15 +69,19 @@ router.get("/", (req, res, next) => {
 
     raseq.on("end", () => {
       
-      
-     
-      // averages
       let bodye = Buffer.concat(chunkes);
-      hypoRisk = JSON.parse(bodye.toString()).hypoglycemiaRisk;
-      lowsugar = JSON.parse(bodye.toString()).min;
-      highsugar = JSON.parse(bodye.toString()).max;
-      median = JSON.parse(bodye.toString()).median;
-      console.log(lowsugar, highsugar,median,hypoRisk, 'here')
+      console.log(JSON.parse(bodye.toString()))
+      const {hypoglycemiaRisk, min, max, median , percentBelowRange, percentWithinRange, percentAboveRange} = JSON.parse(bodye.toString())
+     
+      // total values
+      hypoRisk = hypoglycemiaRisk != null ? hypoglycemiaRisk  : "not available";
+      lowsugar = min;
+      highsugar = max;
+      mediane = median;
+      belowRange = percentBelowRange;
+      inRange =  percentWithinRange;
+      aboveRange = percentAboveRange;
+      estA1c =  (46.7 + mediane) / 28.7
     });
   });
 
@@ -121,14 +135,19 @@ router.get("/", (req, res, next) => {
       console.log(ress.statusCode);
 
       if (ress.statusCode === 200) {
-        console.log(lowsugar, highsugar,median,hypoRisk)
+        console.log(lowsugar, highsugar,mediane,hypoRisk)
         // render to page
         res.render("pages/page", {
           values: JSON.parse(body.toString()),
           lowsugar: lowsugar,
           highsugar: highsugar,
-          sugarsum: median,
-          hyporisk: hypoRisk
+          sugarsum: mediane,
+          daysViewingEl: daysViewing,
+          hyporisk: hypoRisk,
+          belowRange: belowRange,
+          inRange: inRange,
+          aboveRange: aboveRange,
+          estA1c: estA1c
         });
       } else {
         res.redirect(`/refresh?refreshtoken=${refreshtoken}`);

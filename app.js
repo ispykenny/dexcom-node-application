@@ -13,7 +13,7 @@ app.get("/", (req, res, next) => {
   res.render("pages/index");
 });
 app.use('/code', codeRoute);
-app.use('/access_token', getToken)
+app.use('/is_loggedin', getToken)
 app.use('/refresh', getRefresh)
 app.listen(PORT, () => {
   console.log(`listening on port number: ${PORT}`);
