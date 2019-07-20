@@ -44,7 +44,7 @@ router.get("/", (req, res) => {
       client_id: clientid,
       code: responseCode,
       grant_type: "authorization_code",
-      redirect_uri: "http://localhost:5000/code"
+      redirect_uri: "https://dex-hub.herokuapp.com/code"
     })
   );
   requ.end();
