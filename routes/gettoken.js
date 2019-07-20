@@ -71,7 +71,7 @@ router.get("/", (req, res, next) => {
     raseq.on("end", () => {
       
       let bodye = Buffer.concat(chunkes);
-      console.log(JSON.parse(bodye.toString()))
+      // console.log(JSON.parse(bodye.toString()))
       const {hypoglycemiaRisk, min, max, median , percentBelowRange, percentWithinRange, percentAboveRange} = JSON.parse(bodye.toString())
      
       // total values
