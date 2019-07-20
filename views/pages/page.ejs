@@ -4,16 +4,18 @@
 
 <div class="container initial">
   <div class="selection">
-    <select name="" id="">
-      <option value="">24 Hours</option>
-      <option value="">3 Days</option>
-      <option value="">7 Days</option>
-      <option value="">1 Week</option>
-      <option value="">2 Weeks</option>
-      <option value="">3 Weeks</option>
-      <option value="">1 Month</option>
-    </select>
+    <ul>
+      <li><a class="timeline-link" href="1">Days</a></li>
+      <li><a class="timeline-link" href="2">Days</a></li>
+      <li><a class="timeline-link" href="3">Days</a></li>
+      <li><a class="timeline-link" href="7">One Week</a></li>
+      <li><a class="timeline-link" href="14">Two Weeks</a></li>
+      <li><a class="timeline-link" href="21">Three Weeks</a></li>
+      <li><a class="timeline-link" href="30">1 Month</a></li>
+      <li><a class="timeline-link" href="60">2 Months</a></li>
+    </ul>
   </div>
+  <h1>You are viewing the past <span id="day-view"></span></h1>
   <h1>
     Your hypoglycemia risk is <span style="text-decoration: underline;"><%= hyporisk %> low</span>
   </h1>
@@ -60,12 +62,12 @@
     displayTime[i].innerHTML = moment(displayTime[i].innerText).format(
       "h:mmA on MM-DD-YYYY"
     );
-    disp.push(displayTime[i].innerHTML.split(" on")[0] )
+    disp.push(displayTime[i].innerHTML )
 
   }
 
   console.log('end')
-  var ctx = document.getElementById('myChart').getContext('2d');
+  let ctx = document.getElementById('myChart').getContext('2d');
   let values = document.querySelectorAll('.values')
   let allValues = [];
   for(let d = 0; d < values.length; d++) {
@@ -75,14 +77,14 @@
 
   console.log(allValues)
 
-  var myChart = new Chart(ctx, {
+  let myChart = new Chart(ctx, {
     type: 'line',
     responsive: false,
     data: {
-      labels: disp,
+      labels: disp.reverse(),
         datasets: [{
             label: 'mg/dL',
-            data: allValues,
+            data: allValues.reverse(),
             backgroundColor: 'rgba(54, 162, 235, 1)',
             borderWidth: 0.4
         }]
@@ -98,5 +100,25 @@
         pointHoverRadius: 14
     }
 });
+
+
+let dateSelection = document.querySelectorAll('.timeline-link')
+let base = window.location.href;
+let cleanUrl = base.split("&startDate")[0]
+console.log(cleanUrl)
+
+
+const sendOffDest = event => {
+  event.preventDefault();
+  let activeLink = event.currentTarget;
+  let activeUrl = activeLink.getAttribute('href');
+  window.location.replace(cleanUrl+"&startDate="+activeUrl)
+}
+
+
+for(let i = 0; i < dateSelection.length; i++) {
+  dateSelection[i].addEventListener('click', event => sendOffDest(event))
+}
+
 </script>
 <% include ../partials/footer %>

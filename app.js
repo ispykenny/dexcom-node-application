@@ -9,6 +9,7 @@ const getRefresh = require('./routes/refreshtoken');
 
 app.set("view engine", "ejs");
 app.get("/", (req, res, next) => {
+  console.log('landed on home')
   res.render("pages/index");
 });
 app.use('/code', codeRoute);

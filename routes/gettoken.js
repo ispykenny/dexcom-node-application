@@ -13,24 +13,28 @@ let currentTime = "";
 let getCurrentEl = "";
 
 router.get("/", (req, res, next) => {
-  
   let accesstoken = req.query.accesstoken;
   let refreshtoken = req.query.refreshtoken;
-  console.log(
-    "access-token: ",
-    req.query.accesstoken + "refresh-token: " + req.query.refreshtoken
-  );
+  let dateRequested = req.query.startDate;
+  console.log(req.query.startDate)
+  let dates;
+  if(dateRequested) {
+    dates = dateRequested
+  } else {
+    dates = 1;
+  }
+  
+  // console.log(
+  //   "access-token: ",
+  //   req.query.accesstoken + "refresh-token: " + req.query.refreshtoken
+  // );
+
   let ogdates = moment().format("Y-MM-DD");
-  let olderDates = moment().subtract(1, 'days').format("Y-MM-DD")
-  console.log(`/v2/users/self/statistics?startDate=${olderDates}&endDate=${ogdates}`)
-  let previousDate = moment()
-    .subtract(24, "hours")
-    .format("Y-MM-DDT");
+  let olderDates = moment().subtract(dates, 'days').format("Y-MM-DD")
+  let previousDate = moment().subtract(dates, "days").format("Y-MM-DDT");
   currentDate = moment().format("Y-MM-DDT");
   currentTime = moment().format("kk:mm:ss");
-  console.log(currentTime)
-  let stringUrl =
-    "/v2/users/self/egvs?startDate=" + previousDate + currentTime + "&endDate=";
+  let stringUrl =  "/v2/users/self/egvs?startDate=" + previousDate + currentTime + "&endDate=";
 
   getCurrentEl = `${stringUrl}${currentDate}${currentTime}`;
 
@@ -63,7 +67,7 @@ router.get("/", (req, res, next) => {
       lowsugar = JSON.parse(bodye.toString()).min;
       highsugar = JSON.parse(bodye.toString()).max;
       median = JSON.parse(bodye.toString()).median;
-      console.log(JSON.parse(bodye.toString()));
+      console.log(lowsugar, highsugar,median,hypoRisk, 'here')
     });
   });
 
@@ -117,7 +121,7 @@ router.get("/", (req, res, next) => {
       console.log(ress.statusCode);
 
       if (ress.statusCode === 200) {
-
+        console.log(lowsugar, highsugar,median,hypoRisk)
         // render to page
         res.render("pages/page", {
           values: JSON.parse(body.toString()),
