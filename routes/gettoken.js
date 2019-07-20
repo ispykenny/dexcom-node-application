@@ -16,6 +16,7 @@ let belowRange = "";
 let inRange = "";
 let aboveRange = "";
 let estA1c = "";
+let cleanA1c = "";
 router.get("/", (req, res, next) => {
   let accesstoken = req.query.authUser;
   let refreshtoken = req.query.refreshtoken;
@@ -78,10 +79,11 @@ router.get("/", (req, res, next) => {
       lowsugar = min;
       highsugar = max;
       mediane = median;
-      belowRange = percentBelowRange;
-      inRange =  percentWithinRange;
-      aboveRange = percentAboveRange;
+      belowRange = percentBelowRange.toFixed(1)+'%';
+      inRange =  percentWithinRange.toFixed(1)+'%';
+      aboveRange = percentAboveRange.toFixed(1)+'%';
       estA1c =  (46.7 + mediane) / 28.7
+      cleanA1c = estA1c.toFixed(1)
     });
   });
 
@@ -147,7 +149,7 @@ router.get("/", (req, res, next) => {
           belowRange: belowRange,
           inRange: inRange,
           aboveRange: aboveRange,
-          estA1c: estA1c
+          estA1c: cleanA1c
         });
       } else {
         res.redirect(`/refresh?refreshtoken=${refreshtoken}`);

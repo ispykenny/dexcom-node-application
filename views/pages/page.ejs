@@ -1,9 +1,18 @@
 <% include ../partials/header %>
 
-<a href="/">Logout</a>
 
+<div class="loader-bg">
+   <p>loading....</p>
+</div>
 <div class="container initial">
+  <div style="text-align: right;">
+      <a href="/" class="logout">Logout</a>
+  </div>
+
+
+  <h1><%= daysViewingEl %></h1>
   <div class="selection">
+    <span><strong>Select A Range</strong></span>
     <ul class="date-selectors">
       <li><a class="timeline-link" href="1">One Day</a></li>
       <li><a class="timeline-link" href="2">Two Days</a></li>
@@ -13,14 +22,9 @@
       <li><a class="timeline-link" href="21">Three Weeks</a></li>
       <li><a class="timeline-link" href="30">One Month</a></li>
       <li><a class="timeline-link" href="60">Two Months</a></li>
+      <li><a class="timeline-link" href="90">Three Months</a></li>
     </ul>
   </div>
-
-  <h1><%= daysViewingEl %></h1>
-  <h1>
-    Your hypoglycemia risk is <span style="text-decoration: underline;"><%= hyporisk %></span>
-  </h1>
-
   <ul>
     <li>Time spent below range: <%= belowRange %> </li>
     <li>Time spent in range: <%= inRange %></li>
@@ -31,40 +35,50 @@
 
 <div class="cards-parent-outer-most">
   <div class="cards-parent">
+
     <div class="cards">
       <p class="reading"><%= lowsugar %></p>
-      <h4>Low</h4>
+      <h4>LOWEST READING</h4>
     </div>
 
     <div class="cards">
       <p class="reading"><%= highsugar %></p>
-      <h4>High</h4>
+      <h4>HIGHEST READING</h4>
     </div>
 
     <div class="cards">
       <p class="reading"><%= sugarsum %></p>
-      <h4>Average</h4>
+      <h4>AVERAGE READING</h4>
     </div>
-  </div>
 
+  </div>
 </div>
 
 <div class="container">
-    <canvas id="myChart"></canvas>
-    <ul>
-      <% for(let i = 0; i < values.egvs.length; i++) { %>
-      <li>
-        <span class="values"><%= values.egvs[i].value %></span> ||
-        <span class="display-time"><%= values.egvs[i].displayTime %></span>
-      </li>
-      <% } %>
-    </ul>
+  <div style="text-align: center;">
+    <h1>
+      Your hypoglycemia risk is <span style="text-decoration: underline;"><%= hyporisk %></span>
+    </h1>
+  </div>
+  <canvas id="myChart"></canvas>
+  <ul>
+    <% for(let i = 0; i < values.egvs.length; i++) { %>
+    <li>
+      <span class="values"><%= values.egvs[i].value %></span> ||
+      <span class="display-time"><%= values.egvs[i].displayTime %></span>
+    </li>
+    <% } %>
+  </ul>
 </div>
 
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 <script>
+
+  window.onload = function() {
+    document.querySelector('.loader-bg').classList.add("removed")
+  }
   let displayTime = document.querySelectorAll(".display-time");
   let disp = [];
   for (let i = 0; i < displayTime.length; i++) {
@@ -72,19 +86,17 @@
       "h:mmA on MM-DD-YYYY"
     );
     disp.push(displayTime[i].innerHTML )
-
   }
 
-  console.log('end')
+
+
   let ctx = document.getElementById('myChart').getContext('2d');
   let values = document.querySelectorAll('.values')
   let allValues = [];
+
   for(let d = 0; d < values.length; d++) {
     allValues.push(Number(values[d].innerText));
   }
-  console.log(disp)
-
-  console.log(allValues)
 
   let myChart = new Chart(ctx, {
     type: 'line',
@@ -114,13 +126,17 @@
 let dateSelection = document.querySelectorAll('.timeline-link')
 let base = window.location.href;
 let cleanUrl = base.split("&startDate")[0]
-if(base.split("startDate=")[1]) {
-  console.log(true)
-} else {
+if(!base.split("startDate=")[1]) {
   window.location.replace(cleanUrl+"&startDate=1")
-  console.log(false)
 }
-console.log(cleanUrl)
+
+if(base.split("startDate=")[1]) {
+  for(let i = 0; i < dateSelection.length; i++) {
+    if(dateSelection[i].getAttribute('href') === base.split("&startDate=")[1]) {
+      dateSelection[i].classList.add("active")
+    }
+  }
+}
 
 
 const sendOffDest = event => {

@@ -19,10 +19,12 @@
     
     .cards-parent-outer-most, .container {
       max-width: 1400px;
+      width: 90%;
       margin: auto;
     }
     .cards-parent {
       display: flex;
+      padding: 2em 0 4em 0em;
       justify-content: space-around;
     }
     .cards {
@@ -35,13 +37,17 @@
       font-size: 4em;
       margin: 0;
     }
-    .reading h4 {
+    .cards p {
+      text-transform: uppercase;
+    }
+    .cards h4 {
       margin-bottom: 0em;
     }
     .date-selectors {
       display: flex;
       list-style-type: none;
       margin: 0; padding: 0;
+      padding-top: 1em;
     }
     .date-selectors li {
       margin-right: 15px;
@@ -52,7 +58,46 @@
       color: #444;
       font-size: 18px;
       text-decoration: none;
+    }
+    .date-selectors a.active {
+      color: #36a2eb;
+      text-decoration: underline;
+    }
+    .loader-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100vh;
+      z-index: 5;
+      text-align: center;
+      background: white;
+      transition: all 500ms ease;
+    }  
+    .loader-bg.removed {
+      display: none;
+    }
 
+    .loader-bg p {
+      margin: 0;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 100%; 
+    }
+    .twitter {
+      color: #36a2eb
+    }
+
+    .logout {
+      background: #36a2eb;
+      color: white;
+      padding: 0.6em 1.6em;
+      border-radius: 8px;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .content {
+      max-width: 800px;
     }
   </style>
 </head>
